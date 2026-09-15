@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob: mediastream:; img-src 'self' data:">
+  <title>SoundBridge</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">SoundBridge <span class="version" id="version"></span></div>
+    <div class="me">This PC: <b id="hostname">…</b> <span class="muted" id="addresses"></span></div>
+  </header>
+
+  <main class="grid">
+    <section class="card" id="card-connection">
+      <h2>Connection</h2>
+      <div class="role-switch">
+        <label class="role"><input type="radio" name="role" value="host" checked><span><b>Host</b><small>this PC waits for others to join</small></span></label>
+        <label class="role"><input type="radio" name="role" value="join"><span><b>Join</b><small>connect to a host</small></span></label>
+      </div>
+      <div class="row" id="join-fields">
+        <label class="grow">Host address<input id="address" placeholder="192.168.1.20  or  home.example.net" spellcheck="false"></label>
+      </div>
+      <div class="row">
+        <label class="short">Port<input id="port" type="number" min="1" max="65535"></label>
+        <label class="grow">Password<span class="pw"><input id="password" type="password" autocomplete="off" spellcheck="false"><button type="button" class="link" id="toggle-pw">show</button></span></label>
+      </div>
+      <div class="row">
+        <label class="grow">Show this PC as<input id="displayName" spellcheck="false"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="autoConnect"><span>Start automatically when SoundBridge opens</span></label>
+      <div class="actions">
+        <button id="btn-start" class="primary">Start</button>
+        <button id="btn-stop" class="danger" hidden>Stop</button>
+        <span class="status idle" id="status"><i class="dot"></i><span id="status-text">Idle</span></span>
+      </div>
+      <div class="hint" id="host-hint" hidden></div>
+    </section>
+
+    <section class="card">
+      <h2>Send from this PC</h2>
+      <label class="check big"><input type="checkbox" id="shareSystem"><span><b>System audio</b><small>everything this PC plays: games, browser, music</small></span></label>
+      <label class="check indent"><input type="checkbox" id="muteLocal"><span>Mute this PC's own speakers while sharing</span></label>
+      <label>Microphone<select id="micSelect"><option value="">None</option></select></label>
+      <label>Quality<select id="quality">
+        <option value="64000">Low · 64 kb/s · weak internet</option>
+        <option value="128000">Medium · 128 kb/s</option>
+        <option value="256000" selected>High · 256 kb/s</option>
+        <option value="510000">Max · 510 kb/s · same network</option>
+      </select></label>
+      <div class="meter-row"><span>Sending</span><div class="meter" id="send-meter"><i></i></div></div>
+    </section>
+
+    <section class="card">
+      <h2>Play received audio on</h2>
+      <label>Output device<span class="with-btn"><select id="outputSelect"></select><button type="button" class="link" id="refresh-devices">refresh</button></span></label>
+      <label>Volume<span class="with-btn"><input type="range" id="volume" min="0" max="100" value="100"><span class="num" id="volume-value">100%</span></span></label>
+      <label class="check"><input type="checkbox" id="muteIncoming"><span>Mute everything I receive</span></label>
+      <div class="meter-row"><span>Receiving</span><div class="meter" id="recv-meter"><i></i></div></div>
+    </section>
+
+    <section class="card">
+      <h2>Profiles</h2>
+      <p class="muted small">A profile remembers everything above: role, address, password and device choices.</p>
+      <div class="row">
+        <select id="profileSelect" class="grow"><option value="">— saved profiles —</option></select>
+        <button type="button" id="btn-load">Load</button>
+        <button type="button" id="btn-delete" class="danger">Delete</button>
+      </div>
+      <div class="row">
+        <input id="profileName" class="grow" placeholder="Name, e.g. Laptop → PC earphones" spellcheck="false">
+        <button type="button" id="btn-save">Save current</button>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>Peers</h2>
+      <div id="peers" class="peers"><div class="empty">No one connected yet.</div></div>
+    </section>
+
+    <section class="card wide">
+      <h2>Log <button type="button" class="link" id="btn-clear-log">clear</button> <button type="button" class="link" id="btn-open-data">open data folder</button></h2>
+      <pre id="log"></pre>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

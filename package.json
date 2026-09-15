@@ -1,0 +1,44 @@
+{
+  "name": "soundbridge",
+  "productName": "SoundBridge",
+  "version": "0.1.0",
+  "description": "Send one Windows PC's speaker output (or mic) to another PC's headphones over the network, protected by a password.",
+  "main": "main.js",
+  "private": true,
+  "license": "MIT",
+  "author": "aakashchamola",
+  "homepage": "https://github.com/aakashchamola/soundbridge#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aakashchamola/soundbridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aakashchamola/soundbridge/issues"
+  },
+  "keywords": [
+    "audio",
+    "webrtc",
+    "electron",
+    "windows",
+    "wasapi",
+    "loopback",
+    "network-audio",
+    "discord",
+    "opus"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "node scripts/test-signaling.js",
+    "test:e2e": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-e2e.ps1",
+    "pack": "node scripts/pack.js"
+  },
+  "dependencies": {
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "electron": "^39.8.10"
+  }
+}
