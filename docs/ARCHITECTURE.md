@@ -165,11 +165,23 @@ nothing.
 
 ## Packaging
 
-`scripts/pack.js` copies the stock Electron runtime, removes `default_app.asar`, drops
-this app into `resources/app`, copies runtime dependencies (`ws`), and zips the folder
-with Windows' built-in `tar`. `electron.exe` is neither renamed nor re-stamped with an
-icon: doing so breaks its Authenticode signature, and an unsigned binary is exactly what
-Smart App Control and SmartScreen block on other people's machines.
+Two artifacts, built by the `release` workflow on a GitHub runner for every `v*` tag:
+
+- **Installer** (`npm run dist`): electron-builder with the NSIS target, configured in
+  the `build` section of `package.json`. Per-user install under
+  `%LocalAppData%\Programs\SoundBridge`, no admin prompt, shortcuts, an *Apps &
+  features* entry, and the app packed into `app.asar`. electron-builder re-stamps
+  `SoundBridge.exe` with our icon and version info, which invalidates Electron's own
+  Authenticode signature; since the installer itself is unsigned anyway (no certificate),
+  that costs nothing extra. Users see one SmartScreen warning on the installer.
+- **Portable zip** (`npm run pack`): `scripts/pack.js` copies the stock Electron runtime,
+  removes `default_app.asar`, drops this app into `resources/app`, copies runtime
+  dependencies (`ws`), and zips the folder with Windows' built-in `tar`. Here
+  `electron.exe` is neither renamed nor re-stamped, so its signature stays valid: this is
+  the artifact for machines where Smart App Control blocks unsigned binaries outright.
+
+The icon is an SVG rendered to PNG by Electron's offscreen renderer
+(`scripts/render-icon.js`); electron-builder derives the `.ico` from that PNG.
 
 ## Threat model
 

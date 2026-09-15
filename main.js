@@ -87,6 +87,7 @@ function createWindow() {
     minWidth: 720,
     minHeight: 560,
     title: 'SoundBridge',
+    icon: path.join(__dirname, 'assets', 'icon.png'),
     backgroundColor: '#0f1115',
     autoHideMenuBar: true,
     ...(TEST.windowX ? { x: Number(TEST.windowX), y: 40 } : {}),

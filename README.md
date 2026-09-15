@@ -47,14 +47,23 @@ where it plays into the same earphones alongside Discord.
 
 ## Download
 
-Grab `SoundBridge-win-x64-<version>.zip` from the
-[latest release](https://github.com/aakashchamola/soundbridge/releases/latest), unzip
-it anywhere, and run `SoundBridge.cmd`. Nothing is installed; settings live in
-`%APPDATA%\soundbridge\`.
+From the [latest release](https://github.com/aakashchamola/soundbridge/releases/latest):
 
-The `electron.exe` inside is the stock, code-signed Electron binary, deliberately not
-renamed or re-stamped, so Smart App Control and SmartScreen have nothing to complain
-about.
+| File | What it is |
+|---|---|
+| **`SoundBridge-Setup-<version>.exe`** | Installer. Per-user (no admin), Start Menu and desktop shortcuts, uninstaller in *Apps & features*. |
+| `SoundBridge-win-x64-<version>.zip` | Portable folder. Unzip anywhere, run `SoundBridge.cmd`. Nothing is installed. |
+| `SHA256SUMS.txt` | Checksums of both. |
+
+Settings and profiles live in `%APPDATA%\soundbridge\` either way.
+
+**Windows SmartScreen will warn** ("Windows protected your PC") when you run the
+installer, because it is not code-signed; click *More info* → *Run anyway*. A signing
+certificate costs real money per year and this project has none yet. If you would rather
+not click through that, the portable zip keeps the stock, code-signed `electron.exe`
+(not renamed, not re-stamped), so SmartScreen and Smart App Control have nothing to
+complain about. Both are built from this repository by GitHub Actions on every tagged
+release; nothing is uploaded from a personal machine.
 
 ## Quick start: laptop game audio into PC earphones
 
@@ -108,8 +117,15 @@ npm install
 npm start            # run from source
 npm test             # signaling handshake tests
 npm run test:e2e     # host + joiner on this PC, screenshots in dist\e2e\
-npm run pack         # dist\SoundBridge\ and dist\SoundBridge-win-x64-<version>.zip
+npm run pack         # portable: dist\SoundBridge\ and dist\SoundBridge-win-x64-<version>.zip
+npm run dist         # installer: dist\installer\SoundBridge-Setup-<version>.exe (electron-builder, NSIS)
+npm run icon         # re-render assets\icon.svg to assets\icon.png
 ```
+
+To cut a release: bump `version` in `package.json`, add the section to `CHANGELOG.md`,
+commit, then `git tag v<version> && git push --tags`. The `release` workflow builds
+both artifacts, writes `SHA256SUMS.txt`, and publishes the GitHub release with the
+changelog section as its notes.
 
 If you launch from a VS Code terminal and the window never appears, unset
 `ELECTRON_RUN_AS_NODE` first (VS Code sets it, and it makes `electron.exe` behave like
@@ -145,10 +161,13 @@ The full story, including the handshake, the SDP tuning, and the threat model, i
 | `lib/signaling.js` | Password-authenticated, encrypted WebSocket signaling |
 | `lib/store.js` | Atomic JSON settings/profile store |
 | `renderer/` | The UI: capture, WebRTC peers, playback routing, stats, profiles |
+| `assets/` | App icon (`icon.svg` source, `icon.png` rendered) |
 | `scripts/pack.js` | Builds the portable folder + zip |
+| `scripts/render-icon.js` | Renders the icon with Electron's own renderer, no image tools needed |
 | `scripts/test-signaling.js` | Handshake, tamper and reconnect tests |
 | `scripts/test-e2e.ps1` | Runs a host and a joiner on this PC and screenshots both |
-| `.github/workflows/build.yml` | CI: syntax check, tests, portable build as an artifact |
+| `.github/workflows/build.yml` | CI on every push: syntax check, tests, installer + portable zip as artifacts |
+| `.github/workflows/release.yml` | On a `v*` tag: builds both, checksums them, publishes the GitHub release |
 
 The password is stored in plain text in `settings.json` / `profiles.json` in your own
 profile folder, the same way Wi-Fi passwords are; keep that folder to yourself.

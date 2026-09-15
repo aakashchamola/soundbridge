@@ -31,11 +31,20 @@ jobs:
       - name: Signaling tests
         run: npm test
 
-      - name: Package portable build
+      - name: Portable zip (stock signed electron.exe)
         run: npm run pack
+
+      - name: Installer (NSIS)
+        run: npm run dist
 
       - uses: actions/upload-artifact@v4
         with:
-          name: SoundBridge-win-x64
-          path: dist/*.zip
+          name: SoundBridge-installer
+          path: dist/installer/SoundBridge-Setup-*.exe
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SoundBridge-portable
+          path: dist/SoundBridge-win-x64-*.zip
           if-no-files-found: error

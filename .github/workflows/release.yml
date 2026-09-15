@@ -1,0 +1,72 @@
+name: release
+
+# Push a tag like v0.1.1 and this builds the installer and the portable zip on a clean
+# GitHub runner, then publishes them (with SHA-256 sums) as the GitHub release for that tag.
+# Release notes come from the matching section of CHANGELOG.md.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Tests
+        run: npm test
+
+      - name: Portable zip
+        run: npm run pack
+
+      - name: Installer
+        run: npm run dist
+
+      - name: Collect artifacts and checksums
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist/release | Out-Null
+          Copy-Item dist/installer/SoundBridge-Setup-*.exe dist/release/
+          Copy-Item dist/SoundBridge-win-x64-*.zip dist/release/
+          Get-ChildItem dist/release | ForEach-Object {
+            "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
+          } | Set-Content -Encoding ascii dist/release/SHA256SUMS.txt
+          Get-Content dist/release/SHA256SUMS.txt
+
+      - name: Release notes from CHANGELOG.md
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          node -e "
+            const fs = require('fs');
+            const log = fs.readFileSync('CHANGELOG.md', 'utf8');
+            const m = log.match(new RegExp('## \\[' + process.argv[1].replace(/\./g, '\\.') + '\\][^\n]*\n([\\s\\S]*?)(?=\n## \\[|\n\\[Unreleased\\]:|$)'));
+            const body = (m ? m[1] : '').trim() || 'See CHANGELOG.md.';
+            const tail = '\n\n---\n**Install:** download `SoundBridge-Setup-' + process.argv[1] + '.exe` and run it (per-user, no admin). ' +
+              'Windows SmartScreen will warn because the installer is not code-signed: click *More info* then *Run anyway*. ' +
+              'Prefer no installer? `SoundBridge-win-x64-' + process.argv[1] + '.zip` is a portable folder with the stock signed electron.exe. ' +
+              'Checksums are in `SHA256SUMS.txt`.';
+            fs.writeFileSync('dist/release/NOTES.md', body + tail);
+          " $version
+          Get-Content dist/release/NOTES.md
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: SoundBridge ${{ github.ref_name }}
+          body_path: dist/release/NOTES.md
+          files: |
+            dist/release/SoundBridge-Setup-*.exe
+            dist/release/SoundBridge-win-x64-*.zip
+            dist/release/SHA256SUMS.txt

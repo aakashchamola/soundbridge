@@ -5,6 +5,22 @@ All notable changes to SoundBridge. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-16
+
+### Added
+- Windows installer (`SoundBridge-Setup-<version>.exe`, NSIS via electron-builder):
+  per-user install with no admin prompt, Start Menu and desktop shortcuts, uninstaller
+  entry in *Apps & features*, optional install folder.
+- An app icon (`assets/icon.svg`), rendered by Electron itself (`npm run icon`), used by
+  the window, the installer and the shortcuts.
+- `release` workflow: pushing a `v*` tag builds the installer and the portable zip on a
+  GitHub runner, writes `SHA256SUMS.txt`, and publishes the release with the matching
+  CHANGELOG section as notes.
+- The `build` workflow now also produces the installer as an artifact.
+
+### Changed
+- The portable zip now includes `LICENSE` and the icon.
+
 ## [0.1.0] - 2026-09-16
 
 First release.
@@ -26,5 +42,6 @@ First release.
 - Portable packaging (`npm run pack`) that keeps the stock signed `electron.exe`.
 - Signaling test suite and a one-machine end-to-end test with screenshots.
 
-[Unreleased]: https://github.com/aakashchamola/soundbridge/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/aakashchamola/soundbridge/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/aakashchamola/soundbridge/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/aakashchamola/soundbridge/releases/tag/v0.1.0

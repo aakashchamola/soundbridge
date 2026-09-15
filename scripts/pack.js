@@ -26,7 +26,7 @@ fs.rmSync(path.join(target, 'resources', 'default_app.asar'), { force: true });
 
 const appDir = path.join(target, 'resources', 'app');
 fs.mkdirSync(appDir, { recursive: true });
-for (const item of ['main.js', 'preload.js', 'lib', 'renderer', 'README.md']) {
+for (const item of ['main.js', 'preload.js', 'lib', 'renderer', 'assets', 'README.md', 'LICENSE']) {
   fs.cpSync(path.join(root, item), path.join(appDir, item), { recursive: true });
 }
 fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify({

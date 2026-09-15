@@ -37,9 +37,15 @@ renderer/index.html  the page
 renderer/style.css   the look
 renderer/app.js      capture, Peer (WebRTC), playback, stats, settings, profiles, UI
 scripts/pack.js      portable folder + zip
+scripts/render-icon.js  assets/icon.svg -> assets/icon.png
 scripts/test-*.      tests
+assets/              icon
 docs/                ARCHITECTURE.md, TROUBLESHOOTING.md
+.github/workflows/   build.yml (every push), release.yml (v* tags)
 ```
+
+`npm run dist` builds the installer locally (electron-builder downloads NSIS into its
+cache on first run). Releases are cut by tagging, see the README.
 
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains the protocol and the WebRTC
 negotiation; read it before changing either.

@@ -1,12 +1,12 @@
 {
   "name": "soundbridge",
   "productName": "SoundBridge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send one Windows PC's speaker output (or mic) to another PC's headphones over the network, protected by a password.",
   "main": "main.js",
   "private": true,
   "license": "MIT",
-  "author": "aakashchamola",
+  "author": "Aakash Chamola",
   "homepage": "https://github.com/aakashchamola/soundbridge#readme",
   "repository": {
     "type": "git",
@@ -33,12 +33,55 @@
     "start": "electron .",
     "test": "node scripts/test-signaling.js",
     "test:e2e": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-e2e.ps1",
-    "pack": "node scripts/pack.js"
+    "icon": "electron scripts/render-icon.js",
+    "pack": "node scripts/pack.js",
+    "dist": "electron-builder --win --publish never"
   },
   "dependencies": {
     "ws": "^8.21.3"
   },
   "devDependencies": {
-    "electron": "^39.8.10"
+    "electron": "^39.8.10",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.aakashchamola.soundbridge",
+    "productName": "SoundBridge",
+    "copyright": "Copyright © 2026 Aakash Chamola",
+    "directories": {
+      "output": "dist/installer"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "lib/**",
+      "renderer/**",
+      "assets/icon.png",
+      "package.json",
+      "LICENSE"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "artifactName": "SoundBridge-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "SoundBridge",
+      "uninstallDisplayName": "SoundBridge"
+    }
   }
 }
